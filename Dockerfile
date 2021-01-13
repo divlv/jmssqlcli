@@ -4,4 +4,4 @@ COPY ./ ./
 
 RUN mvn clean package
 
-CMD ["java", "-jar", "target/jmssqlcli.jar"]
+ENTRYPOINT ["java", "-jar", "target/jmssqlcli.jar"]
