@@ -67,7 +67,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- ... and make sure you can exec this JAR:  java -jar myapp.jar -->
+			<!-- ... and make sure you can exec this JAR:  java -jar jmssqlcli.jar -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
