@@ -56,5 +56,13 @@ g:\Projects\sqlclient>java -jar target\jmssqlcli.jar -s mssql.example.com:1433 -
 ### End time: Wed Jan 13 19:53:26 EET 2021
 ```
 
+### Docker
+
+Using *jmssqlcli* in Docker is simple. 
+```
+docker run -v /opt:/r emergn/jmssqlcli -s mssql.example.com:1433 -d mydatabase -l iamtheuser --password SeCuRePaSsWord -m update -i /r/update_script.sql
+```
+
+Just use `docker run -v /opt:/r emergn/jmssqlcli ...` prefix. (mapped `/opt` dir as `/r` for SQL files)
 
 eof
