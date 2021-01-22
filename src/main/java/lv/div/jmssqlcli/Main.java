@@ -6,7 +6,6 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
@@ -18,19 +17,20 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class Main {
 
-    public static final String APP_NAME = "(c)2021 MSSQL [very] Simple CLI";
+    public static final String APP_NAME = "(c)2021 MSSQL [very] Simple CLI. v.GIT_VERSION";
     public static final String SELECT_MODE = "select";
     public static final String UPDATE_MODE = "update";
+    public static final int SQL_PREVIEW_LENGTH = 128;
     private static String dbServer;
     private static String dbName;
     private static String dbLogin;
     private static String dbPassword;
     private static String workMode;
     private static String inputFile;
+    private static boolean preview = false;
 
     public static void main(String[] args) throws Exception {
 
@@ -39,6 +39,7 @@ public class Main {
         options.addOption("s", "server", true, "Database server address, e.g. db.example.com:1433");
         options.addOption("d", "database", true, "Database name");
         options.addOption("l", "login", true, "Database login or full login like user@servername");
+        options.addOption("r", "preview", false, "Preview first "+SQL_PREVIEW_LENGTH+" symbols from SQL script");
         options.addOption("p", "password", true, "Database password");
         options.addOption("m", "mode", true, "Worker mode [" + SELECT_MODE + " | " + UPDATE_MODE + "]");
         options.addOption("i", "inputfile", true, "Input file with SQL statement(s)");
@@ -62,6 +63,9 @@ public class Main {
             workMode = cmd.getOptionValue("m");
             inputFile = cmd.getOptionValue("i");
         }
+        preview = cmd.hasOption("r");
+
+
 
         System.out.println("### " + APP_NAME + " -=- Start time: " + new Date() + " -=- Work mode: " + workMode);
 
@@ -70,7 +74,7 @@ public class Main {
 
         try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement();) {
 
-            String SQL = loadFileIntoString(inputFile);
+            String SQL = loadFileIntoString(inputFile, preview);
 
             System.out.println("### Loaded " + SQL.length() + " bytes from " + inputFile);
 
@@ -118,15 +122,24 @@ public class Main {
      * @param filePath file path to load SQL from
      * @return string containing file data
      */
-    private static String loadFileIntoString(String filePath) {
-        StringBuilder contentBuilder = new StringBuilder();
+    private static String loadFileIntoString(String filePath, boolean preview) {
 
-        try (Stream<String> stream = Files.lines(Paths.get(filePath), StandardCharsets.UTF_8)) {
-            stream.forEach(s -> contentBuilder.append(s).append("\n"));
+        String content = "SQL file is empty!"; // Should rise SQL error, and that's correct!
+        try {
+            content = new String(Files.readAllBytes(Paths.get(filePath)));
+
+            if (content.length() > SQL_PREVIEW_LENGTH) {
+                System.out.println("### Preview: " + content.substring(0, SQL_PREVIEW_LENGTH - 1));
+            } else {
+                System.out.println("### Preview: " + content);
+            }
+
+
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            return content;
         }
 
-        return contentBuilder.toString();
     }
 }
