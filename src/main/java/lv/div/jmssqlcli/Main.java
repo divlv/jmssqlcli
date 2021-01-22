@@ -124,7 +124,7 @@ public class Main {
      */
     private static String loadFileIntoString(String filePath, boolean preview) {
 
-        String content = "SQL file is empty!"; // Should rise SQL error, and that's correct!
+        String content = "SQL_file_is_empty!"; // Should rise SQL error, and that's correct!
         try {
             content = new String(Files.readAllBytes(Paths.get(filePath)));
 
