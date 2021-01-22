@@ -123,7 +123,7 @@ public class Main {
      */
     private static String loadFileIntoString(String filePath, boolean preview) {
 
-        String content = "@@@"; // Should rise SQL error, and that's correct!
+        String content = "ERROR"; // Should rise SQL error, and that's correct!
         try {
 
             final File file = new File(filePath);
