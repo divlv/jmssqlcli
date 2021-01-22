@@ -5,9 +5,8 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -39,7 +38,7 @@ public class Main {
         options.addOption("s", "server", true, "Database server address, e.g. db.example.com:1433");
         options.addOption("d", "database", true, "Database name");
         options.addOption("l", "login", true, "Database login or full login like user@servername");
-        options.addOption("r", "preview", false, "Preview first "+SQL_PREVIEW_LENGTH+" symbols from SQL script");
+        options.addOption("r", "preview", false, "Preview first " + SQL_PREVIEW_LENGTH + " symbols from SQL script");
         options.addOption("p", "password", true, "Database password");
         options.addOption("m", "mode", true, "Worker mode [" + SELECT_MODE + " | " + UPDATE_MODE + "]");
         options.addOption("i", "inputfile", true, "Input file with SQL statement(s)");
@@ -64,8 +63,6 @@ public class Main {
             inputFile = cmd.getOptionValue("i");
         }
         preview = cmd.hasOption("r");
-
-
 
         System.out.println("### " + APP_NAME + " -=- Start time: " + new Date() + " -=- Work mode: " + workMode);
 
@@ -124,16 +121,25 @@ public class Main {
      */
     private static String loadFileIntoString(String filePath, boolean preview) {
 
-        String content = "SQL_file_is_empty!"; // Should rise SQL error, and that's correct!
+        String content = "###"; // Should rise SQL error, and that's correct!
         try {
-            content = new String(Files.readAllBytes(Paths.get(filePath)));
+
+            FileInputStream fis = new FileInputStream(filePath);
+            byte[] buffer = new byte[32];
+            StringBuilder sb = new StringBuilder();
+            while (fis.read(buffer) != -1) {
+                sb.append(new String(buffer));
+                buffer = new byte[32];
+            }
+            fis.close();
+
+            content = sb.toString();
 
             if (content.length() > SQL_PREVIEW_LENGTH) {
                 System.out.println("### Preview: " + content.substring(0, SQL_PREVIEW_LENGTH - 1));
             } else {
                 System.out.println("### Preview: " + content);
             }
-
 
         } catch (IOException e) {
             e.printStackTrace();
