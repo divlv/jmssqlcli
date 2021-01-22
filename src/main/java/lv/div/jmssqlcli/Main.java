@@ -5,6 +5,8 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
+import org.apache.commons.io.FileUtils;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -121,19 +123,12 @@ public class Main {
      */
     private static String loadFileIntoString(String filePath, boolean preview) {
 
-        String content = "###"; // Should rise SQL error, and that's correct!
+        String content = "@@@"; // Should rise SQL error, and that's correct!
         try {
 
-            FileInputStream fis = new FileInputStream(filePath);
-            byte[] buffer = new byte[32];
-            StringBuilder sb = new StringBuilder();
-            while (fis.read(buffer) != -1) {
-                sb.append(new String(buffer));
-                buffer = new byte[32];
-            }
-            fis.close();
-
-            content = sb.toString();
+            final File file = new File(filePath);
+            System.out.println("### FileSize to read from: " + file.length());
+            content = FileUtils.readFileToString(file, "UTF-8");
 
             if (content.length() > SQL_PREVIEW_LENGTH) {
                 System.out.println("### Preview: " + content.substring(0, SQL_PREVIEW_LENGTH - 1));
