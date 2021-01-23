@@ -7,7 +7,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.FileUtils;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -53,8 +52,7 @@ public class Main {
         if (cmd.hasOption("h") || !cmd.hasOption("s") || !cmd.hasOption("d") || !cmd.hasOption("l") ||
             !cmd.hasOption("p") || !cmd.hasOption("m") ||
             !cmd.hasOption("i")
-        )
-        {
+        ) {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp(APP_NAME + ": java -jar jmssqlcli", options);
             return;
@@ -76,7 +74,6 @@ public class Main {
         try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement();) {
 
             String SQL = loadFileIntoString(inputFile, preview);
-//            String SQL = loadFileIntoString("/input/file.sql", preview);
 
             System.out.println("### Loaded " + SQL.length() + " bytes from " + inputFile);
 
@@ -121,8 +118,11 @@ public class Main {
     }
 
     /**
+     * Load SQL data from file to string
+     *
      * @param filePath file path to load SQL from
-     * @return string containing file data
+     * @param preview  should we display preview or not
+     * @return file-as-a-string
      */
     private static String loadFileIntoString(String filePath, boolean preview) {
 
@@ -133,10 +133,12 @@ public class Main {
             System.out.println("### FileSize to read from: " + file.length());
             content = FileUtils.readFileToString(file, "UTF-8");
 
-            if (content.length() > SQL_PREVIEW_LENGTH) {
-                System.out.println("### Preview: " + content.substring(0, SQL_PREVIEW_LENGTH - 1));
-            } else {
-                System.out.println("### Preview: " + content);
+            if (preview) {
+                if (content.length() > SQL_PREVIEW_LENGTH) {
+                    System.out.println("### Preview: " + content.substring(0, SQL_PREVIEW_LENGTH - 1));
+                } else {
+                    System.out.println("### Preview: " + content);
+                }
             }
 
         } catch (IOException e) {
