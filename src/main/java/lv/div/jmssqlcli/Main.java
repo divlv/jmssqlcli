@@ -51,8 +51,10 @@ public class Main {
         CommandLine cmd = parser.parse(options, args);
 
         if (cmd.hasOption("h") || !cmd.hasOption("s") || !cmd.hasOption("d") || !cmd.hasOption("l") ||
-            !cmd.hasOption("p") || !cmd.hasOption("m") ||
-            !cmd.hasOption("i")) {
+            !cmd.hasOption("p") || !cmd.hasOption("m") //||
+            //!cmd.hasOption("i")
+        )
+        {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp(APP_NAME + ": java -jar jmssqlcli", options);
             return;
@@ -62,7 +64,7 @@ public class Main {
             dbLogin = cmd.getOptionValue("l");
             dbPassword = cmd.getOptionValue("p");
             workMode = cmd.getOptionValue("m");
-            inputFile = cmd.getOptionValue("i");
+//            inputFile = cmd.getOptionValue("i");
         }
         preview = cmd.hasOption("r");
 
@@ -73,7 +75,8 @@ public class Main {
 
         try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement();) {
 
-            String SQL = loadFileIntoString(inputFile, preview);
+//            String SQL = loadFileIntoString(inputFile, preview);
+            String SQL = loadFileIntoString("/input/file.sql", preview);
 
             System.out.println("### Loaded " + SQL.length() + " bytes from " + inputFile);
 

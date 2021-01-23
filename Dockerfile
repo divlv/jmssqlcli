@@ -9,4 +9,6 @@ RUN sed -i "s/GIT_VERSION/1.0 build $COMMIT_ID/g" src/main/java/lv/div/jmssqlcli
 
 RUN mvn clean package
 
+RUN mkdir /input
+
 ENTRYPOINT ["java", "-jar", "target/jmssqlcli.jar"]
