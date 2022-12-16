@@ -6,13 +6,15 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,7 +22,9 @@ import java.util.List;
 
 public class Main {
 
-    public static final String APP_NAME = "(c)2021 MSSQL [very] Simple CLI. v.GIT_VERSION";
+    private static final Log log = LogFactory.getLog(Main.class);
+
+    public static final String APP_NAME = "(c)2022 MSSQL [very] Simple CLI. v.GIT_VERSION";
     public static final String SELECT_MODE = "select";
     public static final String UPDATE_MODE = "update";
     public static final int SQL_PREVIEW_LENGTH = 128;
@@ -33,6 +37,8 @@ public class Main {
     private static boolean preview = false;
 
     public static void main(String[] args) throws Exception {
+
+        log.debug("JMSSQLCLI Started");
 
         Options options = new Options();
 
@@ -53,6 +59,7 @@ public class Main {
             !cmd.hasOption("p") || !cmd.hasOption("m") ||
             !cmd.hasOption("i")
         ) {
+            log.debug("Wrong parameters requested. Showing help screen...");
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp(APP_NAME + ": java -jar jmssqlcli", options);
             return;
@@ -66,7 +73,7 @@ public class Main {
         }
         preview = cmd.hasOption("r");
 
-        System.out.println("### " + APP_NAME + " -=- Start time: " + new Date() + " -=- Work mode: " + workMode);
+        log.info("### " + APP_NAME + " -=- Start time: " + new Date() + " -=- Work mode: " + workMode);
 
         String connectionUrl =
             "jdbc:sqlserver://" + dbServer + ";database=" + dbName + ";user=" + dbLogin + ";password=" + dbPassword;
@@ -75,7 +82,7 @@ public class Main {
 
             String SQL = loadFileIntoString(inputFile, preview);
 
-            System.out.println("### Loaded " + SQL.length() + " bytes from " + inputFile);
+            log.info("### Loaded " + SQL.length() + " bytes from " + inputFile);
 
             if (SELECT_MODE.equalsIgnoreCase(workMode)) {
                 ResultSet rs = stmt.executeQuery(SQL);
@@ -99,22 +106,22 @@ public class Main {
                     }
                     rowsList.add(row);
                 }
-                System.out.println(tableGenerator.generateTable(headersList, rowsList));
+                log.info(tableGenerator.generateTable(headersList, rowsList));
             } else {
                 stmt.executeUpdate(SQL);
-                System.out.println("### Update executed");
+                log.info("### Update executed");
             }
 
             displayEndTime();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            log.error("SQL Exception thrown: ", e);
             displayEndTime();
         }
 
     }
 
     private static void displayEndTime() {
-        System.out.println("### End time: " + new Date());
+        log.info("### End time: " + new Date());
     }
 
     /**
@@ -130,14 +137,14 @@ public class Main {
         try {
 
             final File file = new File(filePath);
-            System.out.println("### FileSize to read from: " + file.length());
+            log.info("### FileSize to read from: " + file.length());
             content = FileUtils.readFileToString(file, "UTF-8");
 
             if (preview) {
                 if (content.length() > SQL_PREVIEW_LENGTH) {
-                    System.out.println("### Preview: " + content.substring(0, SQL_PREVIEW_LENGTH - 1));
+                    log.info("### Preview: " + content.substring(0, SQL_PREVIEW_LENGTH - 1));
                 } else {
-                    System.out.println("### Preview: " + content);
+                    log.info("### Preview: " + content);
                 }
             }
 
