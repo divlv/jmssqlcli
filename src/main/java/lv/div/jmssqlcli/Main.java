@@ -78,7 +78,9 @@ public class Main {
         String connectionUrl =
             "jdbc:sqlserver://" + dbServer + ";database=" + dbName + ";user=" + dbLogin + ";password=" + dbPassword;
 
-        try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement();) {
+//        try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement();) {
+        Connection con = DriverManager.getConnection(connectionUrl);
+        Statement stmt = con.createStatement();
 
             String SQL = loadFileIntoString(inputFile, preview);
 
@@ -113,10 +115,10 @@ public class Main {
             }
 
             displayEndTime();
-        } catch (Exception e) {
-            log.error("SQL Exception thrown: ", e);
-            displayEndTime();
-        }
+//        } catch (Exception e) {
+//            log.error("SQL Exception thrown: ", e);
+//            displayEndTime();
+//        }
 
     }
 
