@@ -27,7 +27,7 @@ public class Main {
     public static final String APP_NAME = "(c)2023 MSSQL [very] Simple CLI. v.GIT_VERSION";
     public static final String SELECT_MODE = "select";
     public static final String UPDATE_MODE = "update";
-    public static final int SQL_PREVIEW_LENGTH = 128;
+    public static final int SQL_PREVIEW_LENGTH = 255;
     private static String dbServer;
     private static String dbName;
     private static String dbLogin;
