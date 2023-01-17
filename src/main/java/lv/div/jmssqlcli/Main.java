@@ -78,9 +78,7 @@ public class Main {
         String connectionUrl =
             "jdbc:sqlserver://" + dbServer + ";database=" + dbName + ";user=" + dbLogin + ";password=" + dbPassword;
 
-//        try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement();) {
-        Connection con = DriverManager.getConnection(connectionUrl);
-        Statement stmt = con.createStatement();
+        try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement();) {
 
             String SQL = loadFileIntoString(inputFile, preview);
 
@@ -110,15 +108,31 @@ public class Main {
                 }
                 log.info(tableGenerator.generateTable(headersList, rowsList));
             } else {
-                stmt.executeUpdate(SQL);
+                stmt.execute(SQL);
+                // Get all results from this update:
+                do {
+                    ResultSet rs = stmt.getResultSet();
+                    if (rs != null) {
+                        // Process result set
+                        log.info("### Result set found");
+                        // Check result for errors
+                        while (rs.next()) {
+                            log.info("### Result set row found");
+                            log.info("### Result set row: " + rs.getString(1));
+                        }
+                        rs.close();
+                    }
+                } while (stmt.getMoreResults() || stmt.getUpdateCount() != -1);
+
+
                 log.info("### Update executed");
             }
 
             displayEndTime();
-//        } catch (Exception e) {
-//            log.error("SQL Exception thrown: ", e);
-//            displayEndTime();
-//        }
+        } catch (Exception e) {
+            log.error("SQL Exception thrown: ", e);
+            displayEndTime();
+        }
 
     }
 
