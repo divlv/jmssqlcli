@@ -60,10 +60,10 @@ g:\Projects\sqlclient>java -jar target\jmssqlcli.jar -s mssql.example.com:1433 -
 
 Using *jmssqlcli* in Docker is simple. 
 ```
-docker run -v /opt:/r emergn/jmssqlcli:1.3 -s mssql.example.com:1433 -d mydatabase -l iamtheuser --password SeCuRePaSsWord -m update -i /r/update_script.sql
+docker run -v /opt:/r emergn/jmssqlcli:1.4 -s mssql.example.com:1433 -d mydatabase -l iamtheuser --password SeCuRePaSsWord -m update -i /r/update_script.sql
 ```
 
-Just use `docker run -v /opt:/r emergn/jmssqlcli:1.3 ...` prefix. (mapped `/opt` dir as `/r` for SQL files)
+Just use `docker run -v /opt:/r emergn/jmssqlcli:1.4 ...` prefix. (mapped `/opt` dir as `/r` for SQL files)
 
 ### Docker: Log files 
 
@@ -71,7 +71,7 @@ By default, *jmssqlcli* is using `/opt/jmssqlcli.log` file for logs. Default log
 So, to get the logs out of the container, just map the internal `/opt/jmssqlcli.log` file to the host, e.g.:
 
 ```
-docker run -v /opt:/r -v /mypath/jmssqlcli.log:/opt/jmssqlcli.log emergn/jmssqlcli:1.3 ...
+docker run -v /opt:/r -v /mypath/jmssqlcli.log:/opt/jmssqlcli.log emergn/jmssqlcli:1.4 ...
 ```
 
 
